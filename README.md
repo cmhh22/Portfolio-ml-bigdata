@@ -118,6 +118,20 @@ The technical documentation is in `docs/technical_report.md`:
 
 **Key Finding:** `haversine_distance` alone accounts for 78% of feature importance
 
+### 🚀 Deployment Note
+
+> **Only LightGBM model is included in the repository** for deployment purposes.
+> 
+> The Streamlit demo uses LightGBM because:
+> - ✅ Best balance of performance and model size
+> - ✅ Fast inference time (ideal for web applications)
+> - ✅ R² = 0.8040 (competitive accuracy)
+> 
+> **After cloning the repository:**
+> 1. Run notebooks 01-03 to train all models locally
+> 2. All `.pkl` files will be generated in `models/`
+> 3. Local deployment will work with all trained models
+
 ---
 
 ## 📜 License
@@ -128,5 +142,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🔗 Links
 
+- **Repository**: [GitHub - NYC Taxi Big Data ML](https://github.com/cmhh22/portfolio-ml-bigdata)
 - **Dataset**: [Kaggle NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration)
-- **Author**: [CMHH](https://github.com/cmhh22)
+- **Author**: [Carlos Manuel Hernández](https://github.com/cmhh22)
