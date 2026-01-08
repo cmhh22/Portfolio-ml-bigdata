@@ -88,25 +88,12 @@ ROUTES = {
 }
 
 # Available models
-# Different models for local vs deployed environment
-import os
-
-IS_LOCAL = not os.environ.get("STREAMLIT_RUNTIME_ENV")
-
-if IS_LOCAL:
-    # Local: All models including Random Forest
-    MODEL_INFO = {
-        "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
-        "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
-        "random_forest_model.pkl": {"name": "Random Forest", "emoji": "🌲", "r2": 0.7938},
-        "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
-    }
-else:
-    # Deployed: Only LightGBM and Gradient Boosting
-    MODEL_INFO = {
-        "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
-        "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
-    }
+MODEL_INFO = {
+    "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
+    "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
+    "random_forest_model.pkl": {"name": "Random Forest", "emoji": "🌲", "r2": 0.7938},
+    "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
+}
 
 # Default model if others fail to load
 DEFAULT_MODEL = "lightgbm_model.pkl"
@@ -468,6 +455,10 @@ def main():
                 # Only need single expm1 to convert back to seconds
                 pred_log = model_data["model"].predict(features_df)[0]
                 pred_seconds = np.expm1(pred_log)
+                
+                # TEMPORARY DEBUG: Show prediction details
+                if pred_seconds < 120 or pred_seconds > 7200:  # Less than 2 min or more than 2 hours
+                    st.warning(f"⚠️ **{model_data['name']}**: Unusual prediction - raw={pred_log:.4f}, seconds={pred_seconds:.1f}")
                 
                 # Validate prediction
                 if pd.isna(pred_seconds) or np.isinf(pred_seconds) or pred_seconds < 0:
