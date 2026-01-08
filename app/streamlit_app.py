@@ -440,6 +440,10 @@ def main():
                 pred_log = model_data["model"].predict(features_df)[0]
                 pred_seconds = np.expm1(pred_log)
                 
+                # TEMPORARY DEBUG: Show prediction details
+                if pred_seconds < 120 or pred_seconds > 7200:  # Less than 2 min or more than 2 hours
+                    st.warning(f"⚠️ **{model_data['name']}**: Unusual prediction - raw={pred_log:.4f}, seconds={pred_seconds:.1f}")
+                
                 # Validate prediction
                 if pd.isna(pred_seconds) or np.isinf(pred_seconds) or pred_seconds < 0:
                     st.warning(f"⚠️ {model_data['name']}: Invalid prediction (raw: {pred_log:.4f})")
