@@ -1,0 +1,33 @@
+{
+  "feature_columns": [
+    "vendor_id",
+    "passenger_count",
+    "store_and_fwd_flag",
+    "pickup_longitude",
+    "pickup_latitude",
+    "dropoff_longitude",
+    "dropoff_latitude",
+    "hour",
+    "dayofweek",
+    "month",
+    "is_weekend",
+    "is_rush_hour",
+    "is_night",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "haversine_distance",
+    "manhattan_distance",
+    "direction",
+    "center_latitude",
+    "center_longitude",
+    "dist_to_jfk_pickup",
+    "dist_to_lga_pickup",
+    "is_jfk_trip",
+    "is_lga_trip"
+  ],
+  "target_column": "log_trip_duration",
+  "train_samples": 1154992,
+  "val_samples": 288748
+}
