@@ -35,6 +35,19 @@ st.set_page_config(
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODELS_DIR = PROJECT_ROOT / "models"
 
+# Expected feature order (from feature_config.json)
+FEATURE_ORDER = [
+    'vendor_id', 'passenger_count', 'store_and_fwd_flag',
+    'pickup_longitude', 'pickup_latitude', 'dropoff_longitude', 'dropoff_latitude',
+    'hour', 'dayofweek', 'month',
+    'is_weekend', 'is_rush_hour', 'is_night',
+    'hour_sin', 'hour_cos', 'dow_sin', 'dow_cos',
+    'haversine_distance', 'manhattan_distance', 'direction',
+    'center_latitude', 'center_longitude',
+    'dist_to_jfk_pickup', 'dist_to_lga_pickup',
+    'is_jfk_trip', 'is_lga_trip'
+]
+
 # Airport coordinates for feature engineering
 JFK_COORDS = (40.6413, -73.7781)
 LGA_COORDS = (40.7769, -73.8740)
@@ -424,6 +437,9 @@ def main():
             pickup_lat, pickup_lon, dropoff_lat, dropoff_lon,
             pickup_datetime, passenger_count, vendor_id
         )
+        
+        # CRITICAL: Ensure features are in correct order
+        features_df = features_df[FEATURE_ORDER]
         
         # Handle any NaN values in features
         if features_df.isna().any().any():
