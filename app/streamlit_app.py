@@ -88,12 +88,25 @@ ROUTES = {
 }
 
 # Available models
-# XGBoost works locally but may have issues in deployment
-MODEL_INFO = {
-    "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
-    "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
-    "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
-}
+# Different models for local vs deployed environment
+import os
+
+IS_LOCAL = not os.environ.get("STREAMLIT_RUNTIME_ENV")
+
+if IS_LOCAL:
+    # Local: All models including Random Forest
+    MODEL_INFO = {
+        "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
+        "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
+        "random_forest_model.pkl": {"name": "Random Forest", "emoji": "🌲", "r2": 0.7938},
+        "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
+    }
+else:
+    # Deployed: Only LightGBM and Gradient Boosting
+    MODEL_INFO = {
+        "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
+        "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
+    }
 
 # Default model if others fail to load
 DEFAULT_MODEL = "lightgbm_model.pkl"
