@@ -88,8 +88,9 @@ ROUTES = {
 }
 
 # Available models (only models uploaded to GitHub)
+# XGBoost disabled - has feature order mismatch between local and deployed versions
 MODEL_INFO = {
-    "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
+    # "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
     "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
     "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
     "ridge_model.pkl": {"name": "Ridge Regression", "emoji": "📊", "r2": 0.5392},
