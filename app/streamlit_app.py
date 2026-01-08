@@ -436,8 +436,15 @@ def main():
         for model_key in selected_models:
             model_data = models[model_key]
             try:
-                pred_log = model_data["model"].predict(features_df)[0]
+                # Model predicts log(log1p(trip_duration)) due to double log transform
+                # Need to apply inverse: exp(expm1(pred)) or equivalently exp(pred) - 1 + exp
+                pred_double_log = model_data["model"].predict(features_df)[0]
+                
+                # First undo the outer log1p applied during training
+                pred_log = np.expm1(pred_double_log)
+                # Then undo the inner log1p from feature engineering
                 pred_seconds = np.expm1(pred_log)
+                
                 predictions.append({
                     "name": model_data["name"],
                     "emoji": model_data["emoji"],
