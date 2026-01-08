@@ -87,13 +87,12 @@ ROUTES = {
     },
 }
 
-# Available models (only models uploaded to GitHub)
-# XGBoost disabled - has feature order mismatch between local and deployed versions
+# Available models
+# XGBoost works locally but may have issues in deployment
 MODEL_INFO = {
-    # "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
+    "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
     "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
     "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
-    "ridge_model.pkl": {"name": "Ridge Regression", "emoji": "📊", "r2": 0.5392},
 }
 
 # Default model if others fail to load
@@ -456,10 +455,6 @@ def main():
                 # Only need single expm1 to convert back to seconds
                 pred_log = model_data["model"].predict(features_df)[0]
                 pred_seconds = np.expm1(pred_log)
-                
-                # TEMPORARY DEBUG: Show prediction details
-                if pred_seconds < 120 or pred_seconds > 7200:  # Less than 2 min or more than 2 hours
-                    st.warning(f"⚠️ **{model_data['name']}**: Unusual prediction - raw={pred_log:.4f}, seconds={pred_seconds:.1f}")
                 
                 # Validate prediction
                 if pd.isna(pred_seconds) or np.isinf(pred_seconds) or pred_seconds < 0:
