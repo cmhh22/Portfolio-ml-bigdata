@@ -74,14 +74,16 @@ ROUTES = {
     },
 }
 
-# Available models
+# Available models (only models uploaded to GitHub)
 MODEL_INFO = {
     "xgboost_model.pkl": {"name": "XGBoost", "emoji": "🚀", "r2": 0.8234},
     "lightgbm_model.pkl": {"name": "LightGBM", "emoji": "⚡", "r2": 0.8040},
-    "random_forest_model.pkl": {"name": "Random Forest", "emoji": "🌲", "r2": 0.7938},
     "gradient_boosting_model.pkl": {"name": "Gradient Boosting", "emoji": "📈", "r2": 0.7926},
     "ridge_model.pkl": {"name": "Ridge Regression", "emoji": "📊", "r2": 0.5392},
 }
+
+# Default model if others fail to load
+DEFAULT_MODEL = "xgboost_model.pkl"
 
 
 # ============================================
@@ -118,8 +120,10 @@ def format_duration(seconds):
 
 @st.cache_resource
 def load_all_models():
-    """Load all available models."""
+    """Load all available models with better error handling."""
     models = {}
+    failed_models = []
+    
     for filename, info in MODEL_INFO.items():
         path = MODELS_DIR / filename
         if path.exists():
@@ -129,7 +133,16 @@ def load_all_models():
                     **info
                 }
             except Exception as e:
-                st.warning(f"Error loading {filename}: {e}")
+                failed_models.append(f"{info['name']}: {str(e)}")
+        else:
+            failed_models.append(f"{info['name']}: File not found")
+    
+    # Show warnings only if no models loaded successfully
+    if not models and failed_models:
+        st.error("⚠️ No models could be loaded!")
+        for err in failed_models:
+            st.warning(f"• {err}")
+    
     return models
 
 
@@ -208,12 +221,23 @@ def main():
     # Header
     st.title("🚕 NYC Taxi Trip Duration Predictor")
     
+    # Debug info (can be commented out later)
+    with st.expander("🔧 Debug Info"):
+        st.write(f"**Project Root:** `{PROJECT_ROOT}`")
+        st.write(f"**Models Directory:** `{MODELS_DIR}`")
+        st.write(f"**Models Dir Exists:** {MODELS_DIR.exists()}")
+        if MODELS_DIR.exists():
+            st.write(f"**Files in models/:** {list(MODELS_DIR.glob('*.pkl'))}")
+    
     # Load models
     models = load_all_models()
     
     if not models:
-        st.error("❌ No models found! Run `notebooks/03_modeling.ipynb` first.")
+        st.error("❌ No models found! Please ensure trained models are available in the repository.")
+        st.info("💡 Available models should be: xgboost_model.pkl, lightgbm_model.pkl, gradient_boosting_model.pkl, ridge_model.pkl")
         return
+    
+    st.success(f"✅ Successfully loaded {len(models)} model(s): {', '.join([m['name'] for m in models.values()])}")
     
     # ==========================================
     # SIDEBAR - Controls
