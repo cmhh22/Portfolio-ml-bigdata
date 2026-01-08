@@ -110,6 +110,10 @@ def calculate_direction(lat1, lon1, lat2, lon2):
 
 def format_duration(seconds):
     """Format seconds to readable duration."""
+    if pd.isna(seconds) or np.isinf(seconds):
+        return "N/A"
+    if seconds < 0:
+        seconds = abs(seconds)
     if seconds < 60:
         return f"{int(seconds)} sec"
     elif seconds < 3600:
@@ -430,20 +434,36 @@ def main():
             pickup_datetime, passenger_count, vendor_id
         )
         
+        # Check for NaN in features
+        if features_df.isna().any().any():
+            st.error("⚠️ NaN values detected in features!")
+            nan_cols = features_df.columns[features_df.isna().any()].tolist()
+            st.write(f"Columns with NaN: {nan_cols}")
+            # Fill NaN with 0 to prevent model errors
+            features_df = features_df.fillna(0)
+        
+        # Debug: Show features
+        with st.expander("🔍 Feature Values (Debug)"):
+            st.dataframe(features_df.T)
+        
         # Get predictions from all selected models
         predictions = []
         
         for model_key in selected_models:
             model_data = models[model_key]
             try:
-                # Model predicts log(log1p(trip_duration)) due to double log transform
-                # Need to apply inverse: exp(expm1(pred)) or equivalently exp(pred) - 1 + exp
-                pred_double_log = model_data["model"].predict(features_df)[0]
-                
-                # First undo the outer log1p applied during training
-                pred_log = np.expm1(pred_double_log)
-                # Then undo the inner log1p from feature engineering
+                # Model predicts log_trip_duration (which is log1p(trip_duration))
+                # Only need single expm1 to convert back to seconds
+                pred_log = model_data["model"].predict(features_df)[0]
                 pred_seconds = np.expm1(pred_log)
+                
+                # Validate prediction
+                if pd.isna(pred_seconds) or np.isinf(pred_seconds) or pred_seconds < 0:
+                    st.warning(f"⚠️ {model_data['name']}: Invalid prediction (raw: {pred_log:.4f})")
+                    continue
+                
+                # Clamp to reasonable range (1 min to 3 hours)
+                pred_seconds = np.clip(pred_seconds, 60, 10800)
                 
                 predictions.append({
                     "name": model_data["name"],
