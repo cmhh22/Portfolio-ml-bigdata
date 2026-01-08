@@ -224,14 +224,7 @@ def prepare_features(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon,
 def main():
     # Header
     st.title("🚕 NYC Taxi Trip Duration Predictor")
-    
-    # Debug info (can be commented out later)
-    with st.expander("🔧 Debug Info"):
-        st.write(f"**Project Root:** `{PROJECT_ROOT}`")
-        st.write(f"**Models Directory:** `{MODELS_DIR}`")
-        st.write(f"**Models Dir Exists:** {MODELS_DIR.exists()}")
-        if MODELS_DIR.exists():
-            st.write(f"**Files in models/:** {list(MODELS_DIR.glob('*.pkl'))}")
+    st.markdown("*Predict taxi trip duration in New York City using Machine Learning*")
     
     # Load models
     models = load_all_models()
@@ -240,8 +233,6 @@ def main():
         st.error("❌ No models found! Please ensure trained models are available in the repository.")
         st.info("💡 Available models should be: xgboost_model.pkl, lightgbm_model.pkl, gradient_boosting_model.pkl, ridge_model.pkl")
         return
-    
-    st.success(f"✅ Successfully loaded {len(models)} model(s): {', '.join([m['name'] for m in models.values()])}")
     
     # ==========================================
     # SIDEBAR - Controls
@@ -434,17 +425,9 @@ def main():
             pickup_datetime, passenger_count, vendor_id
         )
         
-        # Check for NaN in features
+        # Handle any NaN values in features
         if features_df.isna().any().any():
-            st.error("⚠️ NaN values detected in features!")
-            nan_cols = features_df.columns[features_df.isna().any()].tolist()
-            st.write(f"Columns with NaN: {nan_cols}")
-            # Fill NaN with 0 to prevent model errors
             features_df = features_df.fillna(0)
-        
-        # Debug: Show features
-        with st.expander("🔍 Feature Values (Debug)"):
-            st.dataframe(features_df.T)
         
         # Get predictions from all selected models
         predictions = []
