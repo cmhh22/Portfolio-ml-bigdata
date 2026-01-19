@@ -45,14 +45,13 @@ data/processed/*.parquet
 data/processed/*.csv
 data/sampled/*.csv
 
-# Models (too large for git - except lightgbm for deployment)
+# Models (block large models, keep small ones for deployment)
 models/*.joblib
-models/gradient_boosting_model.pkl
-models/random_forest_model.pkl
-models/ridge_model.pkl
-models/xgboost_model.pkl
-# Keep lightgbm_model.pkl for deployment
 models/*.h5
+models/random_forest_model.pkl
+models/xgboost_model.pkl
+models/ridge_model.pkl
+# Allow: lightgbm_model.pkl and gradient_boosting_model.pkl (small, working models)
 
 # Logs
 *.log
@@ -70,5 +69,5 @@ config.yaml
 temp/
 
 # Documentation - Presentation files (private)
-docs/Informe_Tecnico_NYC_Taxi.docx
+docs/Informe_Big_Data.docx
 docs/estructura_presentacion.txt
